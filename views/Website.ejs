@@ -1,0 +1,94 @@
+<html>
+    <head>
+        <title>SolChain Calculator</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <link href="/styles/Style.css" rel="stylesheet" type="text/css" />
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+    </head>
+    <body>
+        <div class="container">
+            <h1>
+                <i class="fas fa-link"></i> Malte's SolChain Calculator 
+            </h1>
+        </div>
+        <div class="container" id="containerButtons">
+            <button type="button" class="inactive" id="btn_startScanning"><i class="fas fa-play"></i> Start Scanning</button>
+            <button type="button" class="info" id="btn_validateChain"><i class="fas fa-check"></i> Validate Chain</button>
+            <button type="button" class="info" id="btn_getLatestBlock"><i class="fas fa-clock"></i> Get latest block</button>
+            <button type="button" class="info" id="btn_mineBlock"><i class="fas fa-cubes"></i> Mine Block</button>
+            <br style="clear:both;" /> 
+        </div>
+        <div class="container" id="containerOutput">
+            <h3><i class="fas fa-terminal"></i> User Information</h3>
+            <pre><code id="outputConsole"></code></pre>
+        </div>
+
+        <form class ="container" id="submitAddress">
+            <input type="text" id="inputAddress" placeholder="type in desired address.." required />
+            <button type="submit" id="submitButton" class="info" ><i class="fas fa-money-bill"></i> Get Balance </button>
+          </form>
+          
+        <script>
+            const server = 'http://localhost:8000/';
+            var isScanning = <%- JSON.stringify(isScanning) %>;
+            console.log(isScanning);
+            if(isScanning) {
+                $('#btn_startScanning').html('<i class="fas fa-stop"></i> Stop Scanning').toggleClass('inactive active');
+            }
+
+            $('#btn_startScanning').click(function () {
+                let url = $(this).hasClass('inactive') ? 'startScanning' : 'stopScanning';
+                let text = $(this).hasClass('inactive') ? '<i class="fas fa-stop"></i> Stop Scanning' : '<i class="fas fa-play"></i> Start Scanning';
+                $.get(server + url, {}, function (data) {
+                    if(data.success) {
+                        $('#btn_startScanning').html(text).toggleClass("active inactive");
+                        printToConsole(data.console);
+                    }
+                }, 'json');
+            });
+
+            $('#btn_validateChain').click(function () {
+                $.get(server + 'validateChain', {}, function (data) {
+                    if(data.success) {
+                        printToConsole(data.console);
+                    }
+                }, 'json');
+            });
+
+            $('#btn_mineBlock').click(function () {
+                $.get(server + 'mineBlock', {}, function (data) {
+                    if(data.success) {
+                        printToConsole(data.console);
+                    }
+                }, 'json');
+            });
+
+            $('#btn_getLatestBlock').click(function () {
+                
+                $.get(server + 'getLatestBlock', {}, function (data) {
+                    if(data.success) {
+                        printToConsole(data.console);
+                    }
+                }, 'json');
+            });
+
+           $('#submitAddress').submit( function(event){
+               event.preventDefault();
+                var textInput = $("#inputAddress").val();
+                console.log(event);
+                console.log(textInput);
+                $.get(server + 'balances/' + textInput, {}, function (data) {
+                    if(data.success) {
+                        printToConsole(data.console);
+                    }
+                }, 'json');
+            });
+
+            function printToConsole(output) {
+                console.log($('#containerOutput pre').prop("scrollHeight"));
+                $('#outputConsole').text($('#outputConsole').text() + output + '\n');
+                $("#containerOutput pre").animate({ scrollTop: $('#containerOutput pre').prop("scrollHeight") - $('#containerOutput pre').prop("clientHeight")}, 1000);
+            }
+        </script>
+      
+    </body>
