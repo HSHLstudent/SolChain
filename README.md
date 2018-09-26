@@ -43,4 +43,7 @@ Once a hash has been found, the created block can be seen in the console of the 
 - a pc
 
 1. Download all files and connect the solar panel to the arduino. After that, change the Wifi login data and the ThingSpeak-Channel to whatever you set up previously.
-2. 
+
+2. Download the newest version of MongoDB, install it, and create a folder called "data" in your C:-directory.
+
+3. Start the Blockchain-App and enjoy!
